@@ -41,7 +41,7 @@ export default function Home() {
         {topStories.map((story) => (
           <div
             key={story.id}
-            className="story-card bg-customColor rounded-lg shadow-md overflow-hidden"
+            className="story-card bg-white rounded-lg shadow-md overflow-hidden"
           >
             <div className="p-4 mb-5">
             <span className="text-1xl font-semibold mb-2">{story.title}</span>
