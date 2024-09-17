@@ -44,8 +44,8 @@ export default function Home() {
             className="rounded-lg shadow-md overflow-hidden"
           >
             <div className="p-4 mb-5">
-            <span className="text-1xl font-semibold mb-2">{story.title}</span>
-            <a href="#" className='p-2 text-xs'>({story.url})</a>
+            <a href={story.url} className="text-1xl font-semibold mb-2">{story.title}</a>
+            <a href={story.url} className='p-2 text-xs'>({story.url})</a>
             <div className="text-xs p-2 ">{story.score} points by {story.by} </div>
             
             </div>
