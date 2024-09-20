@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
+import Spinner from '../../components/spinner/Spinner'; 
 
 interface Story {
   id: number;
@@ -40,7 +41,7 @@ export default function Home() {
 
   const fetchStories = async (startIndex: number, batchSize: number) => {
     try {
-      setLoading(true);
+      setLoading(true); 
       const batchIds = storyIds.slice(startIndex, startIndex + batchSize);
       const storyPromises = batchIds.map(async (id) => {
         const res = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`);
@@ -53,7 +54,7 @@ export default function Home() {
       setLoading(false);
     } catch (error) {
       console.error('Error fetching stories:', error);
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
@@ -86,16 +87,15 @@ export default function Home() {
             className="rounded-lg shadow-md overflow-hidden"
           >
             <div className="p-4 mb-5">
-            <a href={story.url} className="text-1xl font-semibold mb-2">{story.title}</a>
-            <a href={story.url} className='p-2 text-xs'>({story.url})</a>
-            <div className="text-xs p-2 ">{story.score} points by {story.by} </div>
-            
+              <a href={story.url} className="text-1xl font-semibold mb-2">{story.title}</a>
+              <a href={story.url} className='p-2 text-xs'>({story.url})</a>
+              <div className="text-xs p-2 ">{story.score} points by {story.by} </div>
             </div>
           </div>
         ))}
       </div>
       <div ref={observerRef} className="loading-indicator text-center">
-        {loading && <p>Loading stories...</p>}
+        {loading && <Spinner size={50} color="#09f" />} 
       </div>
     </div>
   );
