@@ -1,6 +1,10 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import Spinner from '../../components/spinner/Spinner'; 
+import StreakCounter from '../../components/streak-counter/StreakCounter';
+import Card from 'react-bootstrap/Card'; 
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
 interface Story {
   id: number;
@@ -77,23 +81,35 @@ export default function Home() {
     };
   }, [currentIndex, loading]);
 
+  const incrementStreak = () => {
+    if (streakCounterRef.current) {
+      streakCounterRef.current.incrementStreak();
+    }
+  };
+
+
+  const streakCounterRef = useRef<any>(null);
+
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold text-center mb-8">Top Stories</h1>
-      <div className="grid grid-cols-1">
+      <StreakCounter ref={streakCounterRef}/>
+      <Row xs={1} md={2} lg={3} className="g-4">
         {topStories.map((story) => (
-          <div
-            key={story.id}
-            className="rounded-lg shadow-md overflow-hidden"
-          >
-            <div className="p-4 mb-5">
-              <a href={story.url} className="text-1xl font-semibold mb-2">{story.title}</a>
-              <a href={story.url} className='p-2 text-xs'>({story.url})</a>
-              <div className="text-xs p-2 ">{story.score} points by {story.by} </div>
-            </div>
-          </div>
+          <Col key={story.id}>
+            <Card className="hover:shadow-lg transition-shadow duration-300 cursor-pointer flex items-center mb-4" 
+            style={{ minHeight: '200px', maxHeight: '200px' }} 
+            onClick={() => incrementStreak()}>
+              <Card.Body className='d-flex flex-column justify-between'>
+                <Card.Title>{story.title} <i className="bi bi-link" style={{ cursor: 'pointer' }} onClick={() => window.open(story.url, '_blank')} /></Card.Title>
+                <Card.Text className="mt-auto">
+                  <div className="text-xs">{story.score} points by {story.by}</div>
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
         ))}
-      </div>
+      </Row>
       <div ref={observerRef} className="loading-indicator text-center">
         {loading && <Spinner size={50} color="#09f" />} 
       </div>
