@@ -71,12 +71,12 @@ const StreakCounter = forwardRef((_, ref) => {
     <div className="streak-counter fixed top-4 right-4 flex items-center p-2 ">
       <FontAwesomeIcon icon={faFire} />
       <span className="ml-2 p-2">
-        
         {clickCount}
       </span>
     </div>
   );
 });
 
-export default StreakCounter;
+StreakCounter.displayName = 'StreakCounter'; 
 
+export default StreakCounter;

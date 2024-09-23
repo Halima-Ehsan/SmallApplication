@@ -18,6 +18,10 @@ interface Story {
   text?: string;
 }
 
+interface StreakCounterRef {
+  incrementStreak: () => void; 
+}
+
 export default function Home() {
   const [topStories, setTopStories] = useState<Story[]>([]);
   const [storyIds, setStoryIds] = useState<number[]>([]);
@@ -25,6 +29,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
+  const streakCounterRef = useRef<StreakCounterRef>(null);  // Use the typed ref
 
   useEffect(() => {
     const fetchTopStoryIds = async () => {
@@ -87,13 +92,10 @@ export default function Home() {
     }
   };
 
-
-  const streakCounterRef = useRef<any>(null);
-
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold text-center mb-8">Top Stories</h1>
-      <StreakCounter ref={streakCounterRef}/>
+      <StreakCounter ref={streakCounterRef} />
       <Row xs={1} md={2} lg={3} className="g-4">
         {topStories.map((story) => (
           <Col key={story.id}>
