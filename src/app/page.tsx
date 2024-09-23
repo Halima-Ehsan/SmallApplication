@@ -5,6 +5,7 @@ import StreakCounter from '../../components/streak-counter/StreakCounter';
 import Card from 'react-bootstrap/Card'; 
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import { UserAuth } from "./context/AuthContext";
 
 interface Story {
   id: number;
@@ -27,9 +28,11 @@ export default function Home() {
   const [storyIds, setStoryIds] = useState<number[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { user } = UserAuth();
+  const [authLoading, setAuthLoading] = useState(true);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
-  const streakCounterRef = useRef<StreakCounterRef>(null);  // Use the typed ref
+  const streakCounterRef = useRef<StreakCounterRef>(null);  
 
   useEffect(() => {
     const fetchTopStoryIds = async () => {
@@ -70,7 +73,7 @@ export default function Home() {
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       const entry = entries[0];
-      if (entry.isIntersecting && !loading) {
+      if (entry.isIntersecting && !loading && user) {
         fetchStories(currentIndex, 20); 
       }
     });
@@ -84,7 +87,7 @@ export default function Home() {
         observer.unobserve(observerRef.current);
       }
     };
-  }, [currentIndex, loading]);
+  }, [currentIndex, loading, user]);
 
   const incrementStreak = () => {
     if (streakCounterRef.current) {
@@ -92,29 +95,68 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50)); 
+      setAuthLoading(false); 
+    };
+
+    checkAuthentication();
+  }, [user]);
+
+  useEffect(() => {
+    if (user && storyIds.length > 0) {
+      fetchStories(0, 20);
+    }
+  }, [user, storyIds]);
+
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold text-center mb-8">Top Stories</h1>
-      <StreakCounter ref={streakCounterRef} />
-      <Row xs={1} md={2} lg={3} className="g-4">
-        {topStories.map((story) => (
-          <Col key={story.id}>
-            <Card className="hover:shadow-lg transition-shadow duration-300 cursor-pointer flex items-center mb-4" 
-            style={{ minHeight: '200px', maxHeight: '200px' }} 
-            onClick={() => incrementStreak()}>
-              <Card.Body className='d-flex flex-column justify-between'>
-                <Card.Title>{story.title} <i className="bi bi-link" style={{ cursor: 'pointer' }} onClick={() => window.open(story.url, '_blank')} /></Card.Title>
-                <Card.Text className="mt-auto">
-                  <div className="text-xs">{story.score} points by {story.by}</div>
-                </Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-      <div ref={observerRef} className="loading-indicator text-center">
-        {loading && <Spinner size={50} color="#09f" />} 
-      </div>
+      {authLoading ? (
+        <Spinner size={30} color="#09f" />
+      ) : (
+        <>
+          {user ? (
+            <>
+              <h1 className="text-2xl font-bold text-center mb-8">Top Stories</h1>
+              <StreakCounter ref={streakCounterRef} />
+              <Row xs={1} md={2} lg={3} className="g-4">
+                {topStories.map((story) => (
+                  <Col key={story.id}>
+                    <Card
+                      className="hover:shadow-lg transition-shadow duration-300 cursor-pointer flex items-center mb-4"
+                      style={{ minHeight: '200px', maxHeight: '200px' }}
+                      onClick={() => incrementStreak()}
+                    >
+                      <Card.Body className="d-flex flex-column justify-between">
+                        <Card.Title>
+                          {story.title}
+                          <i
+                            className="bi bi-link"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => window.open(story.url, '_blank')}
+                          />
+                        </Card.Title>
+                        <Card.Text className="mt-auto">
+                          <div className="text-xs">
+                            {story.score} points by {story.by}
+                          </div>
+                        </Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+              <div ref={observerRef} className="loading-indicator text-center">
+                {loading && <Spinner size={50} color="#09f" />}
+              </div>
+            </>
+          ) : (
+            <p>You need to Login to view Top Stories!</p>
+          )}
+        </>
+      )}
     </div>
   );
+  
 }

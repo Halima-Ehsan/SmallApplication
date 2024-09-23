@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import "./globals.css";
+import {AuthContextProvider} from "./context/AuthContext"
+import Navbar from "./navbar/Navbar"
 
 
 export const metadata: Metadata = {
@@ -17,7 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <AuthContextProvider>
+          <Navbar/>
         {children}
+        </AuthContextProvider>
       </body>
     </html>
   );
